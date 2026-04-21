@@ -3,12 +3,20 @@
 from __future__ import annotations
 
 import os
+from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 
 import httpx
 
 DEFAULT_BASE_URL = "https://minuet.ai"
 DEFAULT_TIMEOUT = 20.0
+
+try:
+    _VERSION = version("minuet-mcp")
+except PackageNotFoundError:  # running from a source tree without install
+    _VERSION = "0.0.0+local"
+
+USER_AGENT = f"minuet-mcp/{_VERSION}"
 
 
 class MinuetClient:
@@ -29,10 +37,13 @@ class MinuetClient:
         self.timeout = timeout
         self._client = client
         self._owns_client = client is None
+        self._headers = {"User-Agent": USER_AGENT}
 
     async def __aenter__(self) -> "MinuetClient":
         if self._client is None:
-            self._client = httpx.AsyncClient(base_url=self.base_url, timeout=self.timeout)
+            self._client = httpx.AsyncClient(
+                base_url=self.base_url, timeout=self.timeout, headers=self._headers
+            )
         return self
 
     async def __aexit__(self, *exc: Any) -> None:
@@ -43,7 +54,9 @@ class MinuetClient:
     async def _get(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         if self._client is None:
             # Allow one-shot usage without `async with`.
-            async with httpx.AsyncClient(base_url=self.base_url, timeout=self.timeout) as client:
+            async with httpx.AsyncClient(
+                base_url=self.base_url, timeout=self.timeout, headers=self._headers
+            ) as client:
                 response = await client.get(path, params=params)
         else:
             response = await self._client.get(path, params=params)

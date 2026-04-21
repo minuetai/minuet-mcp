@@ -6,7 +6,7 @@ import httpx
 import pytest
 import respx
 
-from minuet_mcp.client import DEFAULT_BASE_URL, MinuetClient
+from minuet_mcp.client import DEFAULT_BASE_URL, USER_AGENT, MinuetClient
 
 
 def test_base_url_default(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -61,6 +61,24 @@ async def test_get_agent_url() -> None:
 
     assert route.called
     assert result == {"id": "1:6817"}
+
+
+def test_user_agent_format() -> None:
+    assert USER_AGENT.startswith("minuet-mcp/")
+    # When installed via pyproject, version should be non-empty and numeric-ish.
+    _, _, ver = USER_AGENT.partition("/")
+    assert ver and ver != "0.0.0+local", "expected installed package version"
+
+
+@respx.mock
+async def test_user_agent_header_sent() -> None:
+    route = respx.get("https://minuet.ai/api/relationships").mock(
+        return_value=httpx.Response(200, json={"relationships": []})
+    )
+    await MinuetClient(base_url="https://minuet.ai").list_relationships()
+
+    assert route.called
+    assert route.calls.last.request.headers["user-agent"] == USER_AGENT
 
 
 @respx.mock
