@@ -66,3 +66,6 @@ Minuet is the relationship layer for ERC-8004 AI agents. ERC-8004 gives agents o
 ## License
 
 MIT
+
+<!-- mcp-name: io.github.minuetai/minuet-mcp -->
+

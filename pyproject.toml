@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "minuet-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "MCP server for Minuet — the relationship layer for ERC-8004 AI agents."
 readme = "README.md"
 requires-python = ">=3.10"
