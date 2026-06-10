@@ -9,7 +9,7 @@ description = "MCP server for Minuet — the relationship layer for ERC-8004 AI 
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Minuet Labs" }]
+authors = [{ name = "Minuet Labs", email = "minuet@minuet.ai" }]
 keywords = ["mcp", "model-context-protocol", "erc-8004", "ai-agents", "minuet"]
 classifiers = [
     "Development Status :: 4 - Beta",
